@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "625634197178",
+    "project_id": "cashenya-60133",
+    "storage_bucket": "cashenya-60133.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625634197178:android:f17afe0d11d2a582e94c83",
+        "android_client_info": {
+          "package_name": "com.example.cashenya_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "625634197178-oneg89ctt0seued646pmbiurqf056das.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZVS-9tDPvcEBYVWCS2sp9Fjp55rAuzZk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "625634197178-oneg89ctt0seued646pmbiurqf056das.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
