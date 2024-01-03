@@ -8,7 +8,7 @@ class ExpenseHiveDataSource extends ExpenseDataSource {
   Future<void> addExpense(Expense expense) async {
     try {
       await expensesBox.add(expense);
-      print('Item added to Hive successfully.');
+      // print('Item added to Hive successfully.');
     } catch (e) {
       print('Error adding item to Hive: $e');
     }
@@ -18,7 +18,7 @@ class ExpenseHiveDataSource extends ExpenseDataSource {
   Future<List<Expense>> fetchExpenses() async {
     try {
       final expenses = expensesBox.values.cast<Expense>().toList();
-      print('Items have been successfully fetched from Hive.');
+      // print('Items have been successfully fetched from Hive.');
       return expenses;
     } catch (e) {
       print('Error fetching items from Hive: $e');

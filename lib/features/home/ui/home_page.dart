@@ -1,12 +1,15 @@
 import 'package:cashenya_app/dependencies.dart';
-import 'package:cashenya_app/screens/home/bloc/home_bloc.dart';
-import 'package:cashenya_app/screens/home/ui/widgets/amount_input_widget.dart';
+import 'package:cashenya_app/features/home/bloc/home_bloc.dart';
+import 'package:cashenya_app/features/home/cubit/amount_display_cubit.dart';
+import 'package:cashenya_app/features/home/ui/widgets/amount_input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  static Page page() => const MaterialPage<void>(child: HomePage());
+  
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -21,8 +24,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final homeBloc = getIt<HomeBloc>();
-    final themeData = Theme.of(context);
-    String? totalAmount;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: BlocConsumer<HomeBloc, HomeState>(
@@ -35,67 +36,83 @@ class _HomePageState extends State<HomePage> {
           }
         },
         builder: (context, homeState) {
-          if (homeState is HomeTotalAmountLoadedState) {
-            totalAmount = homeState.amount.toStringAsFixed(2);
-          }
+          // if (homeState is HomeTotalAmountLoadedState) {
+          //   totalAmount = homeState.amount.toStringAsFixed(2);
+          // }
           return Container(
             margin: const EdgeInsets.all(10),
             child: Column(
               children: [
                 SizedBox(height: MediaQuery.of(context).viewPadding.top),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      fit: FlexFit.tight,
-                      child: RichText(
-                        text: TextSpan(
-                          style: themeData.textTheme.bodyLarge,
-                          children: [
-                            TextSpan(
-                              text: '₴ ',
-                              style: TextStyle(
-                                fontSize: 50,
-                                fontWeight: FontWeight.w500,
-                                color: themeData.colorScheme.surface,
-                              ),
-                            ),
-                            TextSpan(
-                              text: totalAmount ?? 'Loading...',
-                              style: const TextStyle(
-                                fontSize: 50,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.settings_rounded,
-                      ),
-                      style: ButtonStyle(
-                        shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            side: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                      padding: const EdgeInsets.all(12.5),
-                    ),
-                  ],
-                ),
+                const TotalAmountWidget(),
                 const PeriodWidget(),
                 const Spacer(),
-                AmountInputWidget(homeBloc, homeState),
+                const AmountInputWidget(),
               ],
             ),
           );
         },
       ),
+    );
+  }
+}
+
+class TotalAmountWidget extends StatelessWidget {
+  const TotalAmountWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return BlocBuilder<AmountDisplayCubit, AmountDisplayState>(
+      builder: (context, state) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              fit: FlexFit.tight,
+              child: RichText(
+                text: TextSpan(
+                  style: theme.textTheme.bodyLarge,
+                  children: [
+                    TextSpan(
+                      text: '₴ ',
+                      style: TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.w500,
+                        color: theme.colorScheme.surface,
+                      ),
+                    ),
+                    TextSpan(
+                      text: state.amount.toStringAsFixed(2),
+                      style: const TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.settings_rounded,
+              ),
+              style: ButtonStyle(
+                shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    side: BorderSide.none,
+                  ),
+                ),
+              ),
+              padding: const EdgeInsets.all(12.5),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -112,7 +129,7 @@ class PeriodWidget extends StatelessWidget {
         const Icon(Icons.restore_rounded),
         const Text(' '),
         const Text(
-          'Period',
+          'Spent',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
@@ -125,7 +142,7 @@ class PeriodWidget extends StatelessWidget {
           },
           borderRadius: BorderRadius.circular(5),
           child: Text(
-            'from 01.08 to 31.08',
+            'between 01.08 to 31.08',
             style: TextStyle(
               decoration: TextDecoration.underline,
               decorationColor: theme.colorScheme.primary,

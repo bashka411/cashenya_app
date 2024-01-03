@@ -18,17 +18,11 @@ class ExpenseRepository extends Cubit<List<Expense>> {
     return total;
   }
 
-  List<Expense> get expenses {
-    final sortedExpenses = state;
-    sortedExpenses.sort((b, a) => a.timestamp.compareTo(b.timestamp));
-    return sortedExpenses;
-  }
-
-  void addExpense(Expense expense) {
-    final currentExpensesList = state;
-    currentExpensesList.add(expense);
-    _addExpenseToHive(expense);
-    emit(currentExpensesList);
+  void addExpense(Expense newExpense) {
+    final expenses = state;
+    expenses.add(newExpense);
+    _addExpenseToHive(newExpense);
+    emit(expenses);
   }
 
   Future<void> loadExpenses() async {
@@ -36,19 +30,20 @@ class ExpenseRepository extends Cubit<List<Expense>> {
     emit(expenses);
   }
 
-  Future<void> _addExpenseToFirestore(Expense expense) async {
-    return await _firestoreDataSource.addExpense(expense);
-  }
-
   Future<void> _addExpenseToHive(Expense expense) async {
+    print('Adding expense to Hive');
     return await _hiveDataSource.addExpense(expense);
-  }
-
-  Future<List<Expense>> _fetchExpensesFromFirestore() async {
-    return await _firestoreDataSource.fetchExpenses();
   }
 
   Future<List<Expense>> _fetchExpensesFromHive() async {
     return await _hiveDataSource.fetchExpenses();
+  }
+
+  Future<void> _addExpenseToFirestore(Expense expense) async {
+    return await _firestoreDataSource.addExpense(expense);
+  }
+
+  Future<List<Expense>> _fetchExpensesFromFirestore() async {
+    return await _firestoreDataSource.fetchExpenses();
   }
 }

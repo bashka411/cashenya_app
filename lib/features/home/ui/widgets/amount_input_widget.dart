@@ -1,42 +1,71 @@
-import 'package:cashenya_app/screens/home/bloc/home_bloc.dart';
-import 'package:cashenya_app/screens/home/ui/widgets/numpad_widget.dart';
+import 'package:cashenya_app/features/home/cubit/amount_input_cubit.dart';
+import 'package:cashenya_app/features/home/ui/widgets/numpad_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AmountInputWidget extends StatelessWidget {
-  final HomeBloc homeBloc;
-  final HomeState homeState;
-  const AmountInputWidget(this.homeBloc, this.homeState, {super.key});
+  const AmountInputWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     final themeData = Theme.of(context);
-    final inputValue = homeState is HomeInputValueEnteredState ? (homeState as HomeInputValueEnteredState).value : '';
+    final amountInputCubit = context.read<AmountInputCubit>();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        homeState is HomeInputValueEnteredState ? const PressToAddExpenseHintWidget() : const SizedBox.shrink(),
-        FittedBox(
-          fit: BoxFit.contain,
-          child: Text(
-            homeState is HomeInputValueEnteredState ? inputValue : '0',
-            style: TextStyle(
-              fontSize: 50,
-              fontWeight: FontWeight.w600,
-              color: homeState is HomeInputValueEnteredState ? null : themeData.colorScheme.onPrimary.withOpacity(.25),
-            ),
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<AmountInputCubit, AmountInputState>(
+      bloc: amountInputCubit,
+      builder: (context, state) {
+        String formatNumber(String input) {
+          List<String> parts = input.split(".");
+          if (parts.length == 1) {
+            return ".00";
+          }
+          if (parts[1].isEmpty) {
+            return "00";
+          }
+          if (parts[1].length == 1) {
+            return "0";
+          }
+          return '';
+        }
+
+        final String amountSuffix = formatNumber(state.amount);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            homeState is HomeTransactionAddedState ? const UndoTransactionWidget() : const SizedBox.shrink(),
-            homeState is HomeInputValueEnteredState ? const AddTransactionNameWidget() : const SizedBox.shrink(),
+            state.status == AmountInputStatus.valid ? const PressToAddExpenseHintWidget() : const SizedBox.shrink(),
+            FittedBox(
+                fit: BoxFit.contain,
+                child: RichText(
+                  text: TextSpan(
+                    text: state.amount,
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.w600,
+                      color: state.status == AmountInputStatus.initial ? themeData.colorScheme.onPrimary.withOpacity(.25) : null,
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: amountSuffix,
+                        style: TextStyle(
+                          color: themeData.colorScheme.onPrimary.withOpacity(.25),
+                        ),
+                      ),
+                    ],
+                  ),
+                )),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     // state is HomeNewTransactionAddedState ? const UndoTransactionWidget() : const SizedBox.shrink(),
+            //     state.status == AmountInputStatus.valid ? const AddTransactionNameWidget() : const SizedBox.shrink(),
+            //   ],
+            // ),
+            const SizedBox(height: 10),
+            const NumpadWidget(),
           ],
-        ),
-        const SizedBox(height: 20),
-        NumpadWidget(homeBloc, homeState),
-      ],
+        );
+      },
     );
   }
 }
@@ -128,13 +157,7 @@ class _AddTransactionNameWidgetState extends State<AddTransactionNameWidget> {
   Widget build(BuildContext context) {
     final transactionNameFocusNode = FocusNode();
     final themeData = Theme.of(context);
-    // final a = Padding(
-    //     padding: const EdgeInsets.all(5),
-    //     child: Row(children: [
-    //       Icon(Icons.edit_rounded, size: 20, color: themeData.colorScheme.onBackground),
-    //       Text(' Add a transaction name',
-    //           style: TextStyle(color: themeData.colorScheme.onBackground, fontSize: 16, fontWeight: FontWeight.w500))
-    //     ]));
+
     return SizedBox(
       width: 240,
       child: TextField(
@@ -145,7 +168,7 @@ class _AddTransactionNameWidgetState extends State<AddTransactionNameWidget> {
         cursorColor: themeData.colorScheme.onPrimary,
         decoration: const InputDecoration(
           isDense: true,
-          hintText: 'Add a transaction name',
+          hintText: 'Add name',
           suffixIcon: Icon(
             Icons.edit_rounded,
             size: 20,

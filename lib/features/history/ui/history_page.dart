@@ -1,7 +1,7 @@
 import 'package:cashenya_app/data/models/expense.dart';
 import 'package:cashenya_app/data/repository/expenses/expense_repository.dart';
 import 'package:cashenya_app/dependencies.dart';
-import 'package:cashenya_app/screens/history/bloc/history_bloc.dart';
+import 'package:cashenya_app/features/history/bloc/history_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:intl/intl.dart';
@@ -92,8 +92,7 @@ class HistorySearchBar extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Search',
                 hintStyle: TextStyle(
-                  color:
-                      Theme.of(context).colorScheme.onPrimary.withOpacity(.5),
+                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(.5),
                 ),
                 prefixIcon: const Icon(Icons.search_rounded, size: 25),
                 contentPadding: EdgeInsets.zero,
@@ -124,8 +123,7 @@ class HistoryExpensesListView extends StatefulWidget {
   const HistoryExpensesListView({super.key});
 
   @override
-  State<HistoryExpensesListView> createState() =>
-      _HistoryExpensesListViewState();
+  State<HistoryExpensesListView> createState() => _HistoryExpensesListViewState();
 }
 
 class _HistoryExpensesListViewState extends State<HistoryExpensesListView> {
@@ -140,6 +138,8 @@ class _HistoryExpensesListViewState extends State<HistoryExpensesListView> {
   @override
   Widget build(BuildContext context) {
     final expenses = getIt<ExpenseRepository>().state;
+    expenses.sort((b, a) => a.timestamp.compareTo(b.timestamp));
+
     final DateTime now = DateTime.now();
     return Expanded(
       child: ListView.builder(
@@ -149,13 +149,9 @@ class _HistoryExpensesListViewState extends State<HistoryExpensesListView> {
           final String dividerText;
           bool shouldPlaceDivider = true;
 
-          if (expenseDate.year == now.year &&
-              expenseDate.month == now.month &&
-              expenseDate.day == now.day) {
+          if (expenseDate.year == now.year && expenseDate.month == now.month && expenseDate.day == now.day) {
             dividerText = 'Today';
-          } else if (expenseDate.year == now.year &&
-              expenseDate.month == now.month &&
-              expenseDate.day == now.day - 1) {
+          } else if (expenseDate.year == now.year && expenseDate.month == now.month && expenseDate.day == now.day - 1) {
             dividerText = 'Yesterday';
           } else {
             dividerText = DateFormat('dd.MM.yy').format(expenseDate);
@@ -205,8 +201,7 @@ class HistoryExpensesListItem extends StatefulWidget {
   final String dividerText;
 
   @override
-  State<HistoryExpensesListItem> createState() =>
-      _HistoryExpensesListItemState();
+  State<HistoryExpensesListItem> createState() => _HistoryExpensesListItemState();
 }
 
 class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
@@ -273,16 +268,12 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
     final historyBloc = getIt<HistoryBloc>();
     final isExpanded = widget.listItemIndex == widget.selectedItemIndex;
     final themeData = Theme.of(context);
-    final nameTextController =
-        TextEditingController(text: widget.expense.name ?? 'Add description');
-    final amountTextController =
-        TextEditingController(text: widget.expense.amount.toStringAsFixed(2));
+    final nameTextController = TextEditingController(text: widget.expense.name ?? 'Add description');
+    final amountTextController = TextEditingController(text: widget.expense.amount.toStringAsFixed(2));
 
     return Column(
       children: [
-        widget.shouldPlaceDivider
-            ? HistoryDateDivider(widget.dividerText)
-            : const SizedBox.shrink(),
+        widget.shouldPlaceDivider ? HistoryDateDivider(widget.dividerText) : const SizedBox.shrink(),
         InkWell(
           enableFeedback: false,
           onTap: () {
@@ -313,8 +304,7 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
                               SizedBox(
                                 height: 25,
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text(
                                       'Amount:',
@@ -330,30 +320,21 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
                                         style: ButtonStyle(
                                           shape: MaterialStatePropertyAll(
                                             RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(7),
+                                              borderRadius: BorderRadius.circular(7),
                                             ),
                                           ),
-                                          padding:
-                                              const MaterialStatePropertyAll(
-                                                  EdgeInsets.all(8)),
+                                          padding: const MaterialStatePropertyAll(EdgeInsets.all(8)),
                                         ),
                                         onPressed: () {
                                           showDateTimePicker();
                                         },
                                         child: Text(
-                                          DateFormat('HH:mm').format(widget
-                                              .expense.timestamp
-                                              .toDate()),
+                                          DateFormat('HH:mm').format(widget.expense.timestamp.toDate()),
                                           style: TextStyle(
-                                            color:
-                                                themeData.colorScheme.onPrimary,
+                                            color: themeData.colorScheme.onPrimary,
                                             fontSize: 36,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor: themeData
-                                                .colorScheme.onPrimary
-                                                .withOpacity(.5),
+                                            decoration: TextDecoration.underline,
+                                            decorationColor: themeData.colorScheme.onPrimary.withOpacity(.5),
                                           ),
                                         ),
                                       ),
@@ -372,9 +353,7 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
                                 style: TextStyle(
                                   decoration: TextDecoration.underline,
                                   color: themeData.colorScheme.onPrimary,
-                                  decorationColor: themeData
-                                      .colorScheme.onPrimary
-                                      .withOpacity(.5),
+                                  decorationColor: themeData.colorScheme.onPrimary.withOpacity(.5),
                                   fontFamily: 'Inter',
                                   fontSize: 40,
                                   fontWeight: FontWeight.w500,
@@ -395,9 +374,7 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
                                 ),
                                 style: TextStyle(
                                   decoration: TextDecoration.underline,
-                                  decorationColor: themeData
-                                      .colorScheme.onPrimary
-                                      .withOpacity(.5),
+                                  decorationColor: themeData.colorScheme.onPrimary.withOpacity(.5),
                                   fontFamily: 'Inter',
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
@@ -405,8 +382,7 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
                               ),
                               const SizedBox(height: 12),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
@@ -420,27 +396,22 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
                                       );
                                     },
                                     style: ButtonStyle(
-                                      shape: MaterialStatePropertyAll<
-                                          RoundedRectangleBorder>(
+                                      shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(15),
                                           side: BorderSide.none,
                                         ),
                                       ),
-                                      backgroundColor: MaterialStatePropertyAll(
-                                          themeData.colorScheme.error),
+                                      backgroundColor: MaterialStatePropertyAll(themeData.colorScheme.error),
                                     ),
                                     child: const Text('Delete'),
                                   ),
                                   ElevatedButton(
                                     onPressed: null,
                                     style: ButtonStyle(
-                                      shape: MaterialStatePropertyAll<
-                                          RoundedRectangleBorder>(
+                                      shape: MaterialStatePropertyAll<RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(15),
                                           side: BorderSide.none,
                                         ),
                                       ),
@@ -457,9 +428,7 @@ class _HistoryExpensesListItemState extends State<HistoryExpensesListItem> {
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        amountRichText(
-                            amount: widget.expense.amount,
-                            color: themeData.colorScheme.onPrimary),
+                        amountRichText(amount: widget.expense.amount, color: themeData.colorScheme.onPrimary),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(

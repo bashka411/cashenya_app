@@ -1,14 +1,16 @@
-import 'package:cashenya_app/screens/home/bloc/home_bloc.dart';
+import 'package:cashenya_app/dependencies.dart';
+import 'package:cashenya_app/features/home/cubit/amount_input_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class NumpadWidget extends StatelessWidget {
-  final HomeBloc homeBloc;
-  final HomeState homeState;
-  const NumpadWidget(this.homeBloc, this.homeState, {super.key});
+  const NumpadWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final amountInputCubit = getIt<AmountInputCubit>();
+
     final themeData = Theme.of(context);
 
     final enabledEnterButtonTheme = themeData.elevatedButtonTheme.style!.copyWith(
@@ -23,7 +25,6 @@ class NumpadWidget extends StatelessWidget {
         ),
       ),
     );
-
     final disabledEnterButtonTheme = themeData.elevatedButtonTheme.style!.copyWith(
       backgroundColor: const MaterialStatePropertyAll(
         Color(0xFF1E2025),
@@ -47,20 +48,20 @@ class NumpadWidget extends StatelessWidget {
       mainAxisSpacing: 10,
       crossAxisSpacing: 10,
       children: [
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '7', homeBloc: homeBloc),
+          child: InputButton(text: '7'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '8', homeBloc: homeBloc),
+          child: InputButton(text: '8'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '9', homeBloc: homeBloc),
+          child: InputButton(text: '9'),
         ),
         StaggeredGridTile.count(
           crossAxisCellCount: 1,
@@ -70,60 +71,64 @@ class NumpadWidget extends StatelessWidget {
               Icons.backspace_outlined,
               size: 30,
             ),
-            onPressed: () => homeBloc.add(HomeInputSymbolRemovedEvent()),
+            onPressed: () => amountInputCubit.removeLastSymbol(),
           ),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '4', homeBloc: homeBloc),
+          child: InputButton(text: '4'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '5', homeBloc: homeBloc),
+          child: InputButton(text: '5'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '6', homeBloc: homeBloc),
+          child: InputButton(text: '6'),
         ),
         StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 3,
-          child: ElevatedButton(
-            onPressed: () => homeBloc.add(HomeAddExpenseButtonClickedEvent()),
-            style: homeState is HomeInputValueEnteredState ? enabledEnterButtonTheme : disabledEnterButtonTheme,
-            child: const Icon(
-              Icons.keyboard_return_rounded,
-              size: 25,
-            ),
+          child: BlocBuilder<AmountInputCubit, AmountInputState>(
+            builder: (context, state) {
+              return ElevatedButton(
+                onPressed: state.status == AmountInputStatus.valid ? () => amountInputCubit.addTransaction() : null,
+                style: state.status == AmountInputStatus.valid ? enabledEnterButtonTheme : disabledEnterButtonTheme,
+                child: const Icon(
+                  Icons.keyboard_return_rounded,
+                  size: 25,
+                ),
+              );
+            },
           ),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '1', homeBloc: homeBloc),
+          child: InputButton(text: '1'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '2', homeBloc: homeBloc),
+          child: InputButton(text: '2'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '3', homeBloc: homeBloc),
+          child: InputButton(text: '3'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 2,
           mainAxisCellCount: 1,
-          child: InputButton(text: '0', homeBloc: homeBloc),
+          child: InputButton(text: '0'),
         ),
-        StaggeredGridTile.count(
+        const StaggeredGridTile.count(
           crossAxisCellCount: 1,
           mainAxisCellCount: 1,
-          child: InputButton(text: '.', homeBloc: homeBloc),
+          child: InputButton(text: '.'),
         ),
       ],
     );
@@ -132,16 +137,14 @@ class NumpadWidget extends StatelessWidget {
 
 class InputButton extends StatelessWidget {
   final String text;
-  final HomeBloc homeBloc;
-  const InputButton({required this.text, required this.homeBloc, super.key});
+  const InputButton({required this.text, super.key});
 
   @override
   Widget build(BuildContext context) {
+    final amountInputCubit = context.read<AmountInputCubit>();
     return ElevatedButton(
       onPressed: () {
-        homeBloc.add(
-          HomeInputSymbolAddedEvent(text),
-        );
+        amountInputCubit.appendSymbol(text);
       },
       child: Text(
         text,
