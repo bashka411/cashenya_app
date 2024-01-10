@@ -29,20 +29,22 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   get_it.setup();
-  runApp(const MyApp());
+  final authRepository = AuthRepository();
+  runApp(MyApp(authRepository: authRepository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AuthRepository _authRepository;
+  const MyApp({required AuthRepository authRepository, super.key}) : _authRepository = authRepository;
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = getIt<AuthRepository>();
-    return Builder(builder: (context) {
-      return MultiBlocProvider(
+    return RepositoryProvider.value(
+      value: _authRepository,
+      child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => AppBloc(authRepository: authRepository),
+            create: (context) => AppBloc(authRepository: _authRepository),
           ),
           BlocProvider(
             create: (context) => getIt<HomeBloc>(),
@@ -54,18 +56,22 @@ class MyApp extends StatelessWidget {
             create: (context) => getIt<AmountDisplayCubit>(),
           )
         ],
-        child: MaterialApp(
-          home: FlowBuilder<AuthStatus>(
-              state: context.select((AppBloc bloc) => bloc.state.status),
-              onGeneratePages: onGenerateAppViewPages,
-            ),
-          title: 'Cashenya',
-          debugShowCheckedModeBanner: false,
-          themeMode: ThemeMode.dark,
-          theme: ThemeClass.lightTheme,
-          darkTheme: ThemeClass.darkTheme,
+        child: Builder(
+          builder: (context) {
+            return MaterialApp(
+              home: FlowBuilder<AuthStatus>(
+                state: context.select((AppBloc bloc) => bloc.state.status),
+                onGeneratePages: onGenerateAppViewPages,
+              ),
+              title: 'Cashenya',
+              debugShowCheckedModeBanner: false,
+              themeMode: ThemeMode.dark,
+              theme: ThemeClass.lightTheme,
+              darkTheme: ThemeClass.darkTheme,
+            );
+          }
         ),
-      );
-    });
+      ),
+    );
   }
 }

@@ -36,9 +36,6 @@ class _HomePageState extends State<HomePage> {
           }
         },
         builder: (context, homeState) {
-          // if (homeState is HomeTotalAmountLoadedState) {
-          //   totalAmount = homeState.amount.toStringAsFixed(2);
-          // }
           return Container(
             margin: const EdgeInsets.all(10),
             child: Column(

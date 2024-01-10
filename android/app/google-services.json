@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "625634197178-oneg89ctt0seued646pmbiurqf056das.apps.googleusercontent.com",
+          "client_id": "625634197178-cmq4ugs6vusi3kpqk2acg5n0a94ifini.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cashenya_app",
+            "certificate_hash": "29b5238f16988034ab82991194bc1728f2f76b39"
+          }
+        },
+        {
+          "client_id": "625634197178-4cgajm88bscehupqjcihpe3gj5q6idd1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,8 +35,15 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "625634197178-oneg89ctt0seued646pmbiurqf056das.apps.googleusercontent.com",
+              "client_id": "625634197178-4cgajm88bscehupqjcihpe3gj5q6idd1.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "625634197178-bijsvj36l6ofmh3urmqrlrkfcmh3qfg9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cashenyaApp"
+              }
             }
           ]
         }

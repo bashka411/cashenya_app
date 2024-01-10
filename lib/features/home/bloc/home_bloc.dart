@@ -31,7 +31,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   FutureOr<void> homeNavigateSettingsButtonClicked(HomeNavigateToSettingsEvent event, Emitter<HomeState> emit) {
-    emit(HomeNavigateToSettingsActionState());
+
+    // emit(HomeNavigateToSettingsActionState());
   }
 
   FutureOr<void> homeNavigateHistoryButtonClicked(HomeNavigateToHistoryEvent event, Emitter<HomeState> emit) {
